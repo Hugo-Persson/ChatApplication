@@ -1,0 +1,46 @@
+html {
+  background-color: #525252;
+  height: 100vh;
+}
+
+body {
+  color: white;
+}
+
+#chatForm {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: fixed;
+  bottom: 0%;
+  width: 100%;
+  left: 0;
+}
+
+#chatForm button {
+  -webkit-box-flex: 0.5;
+      -ms-flex: 0.5;
+          flex: 0.5;
+  background-color: aqua;
+  border: none;
+  cursor: pointer;
+}
+
+#m {
+  -webkit-box-flex: 10;
+      -ms-flex: 10;
+          flex: 10;
+  padding: 15px;
+  background-color: #222222;
+  color: white;
+  border: none;
+}
+
+#m:focus {
+  outline: none;
+}
+
+#messages {
+  list-style: none;
+}
+/*# sourceMappingURL=style.css.map */

@@ -7,6 +7,9 @@ const io = require("socket.io")(http);
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
+app.get("/css/style.css", (req, res) => {
+    res.sendFile(__dirname + "/css/style.css")
+});
 
 io.on("connection", (socket) => {
     console.log("user connected");
