@@ -15,7 +15,7 @@ app.use(express.urlencoded({
     extended: true
 }));
 
-
+app.use(express.static("static"))
 async function getUserCol() {
     const connect = await mongodb.connect(con, {
         useNewUrlParser: true,
@@ -30,10 +30,6 @@ async function getUserCol() {
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
-app.get("/css/style.css", (req, res) => {
-    res.sendFile(__dirname + "/css/style.css")
-});
-
 io.on("connection", (socket) => {
     console.log("user connected");
     socket.on("disconnect", () => console.log("user disconnected"));
@@ -46,9 +42,6 @@ io.on("connection", (socket) => {
 http.listen(4200, () => console.log("4200"));
 app.get("/register", (req, res) => {
     res.sendFile(__dirname + "/register.html");
-});
-app.get("/css/auth.css", (req, res) => {
-    res.sendFile(__dirname + "/css/auth.css");
 });
 app.post("/registerUser", async (req, res) => {
     try {
