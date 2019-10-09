@@ -10,12 +10,14 @@ const secretJSONToken = "faa807c4-d05e-47f3-91af-e09ec6cb80ce";
 const con = "mongodb+srv://Hugo:ecGXESd8L9zdfi3@cluster0-g63l9.mongodb.net/test?retryWrites=true&w=majority";
 
 
-
+app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
 
 app.use(express.static("static"))
+
+
 async function getUserCol() {
     const connect = await mongodb.connect(con, {
         useNewUrlParser: true,
@@ -42,6 +44,45 @@ io.on("connection", (socket) => {
 http.listen(4200, () => console.log("4200"));
 app.get("/register", (req, res) => {
     res.sendFile(__dirname + "/register.html");
+});
+app.get("/login", (req, res) => {
+    res.sendFile(__dirname + "/login.html")
+});
+app.post("/login", async (req, res) => {
+    try {
+
+        const login = req.body;
+        console.log(login);
+        const col = await getUserCol();
+        const user = await col.findOne({
+            username: login.username
+        })
+
+        if (user) {
+            //not undefined
+            if (await bcrypt.compare(login.password, user.password)) {
+                // Log in true
+                res.json({
+                    error: false
+                });
+            } else {
+                res.json({
+                    error: true,
+                    msg: "Wrong password"
+                })
+
+            }
+        } else {
+            //Undefined
+            res.json({
+                error: true,
+                msg: "Couldn't find user"
+            })
+        }
+
+    } catch (err) {
+        console.log(err);
+    }
 });
 app.post("/registerUser", async (req, res) => {
     try {
