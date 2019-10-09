@@ -1,0 +1,47 @@
+html {
+  background-color: #222831;
+  color: white;
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  width: 60%;
+  margin: auto;
+}
+
+form {
+  text-align: center;
+}
+
+form input {
+  margin: 10px;
+  padding: 10px;
+  background-color: #393e46;
+  border: none;
+  color: #eeeeee;
+  width: 100%;
+}
+
+form input[type="submit"] {
+  margin-right: 0;
+}
+
+button,
+a,
+input[type="submit"] {
+  background-color: #393e46;
+  border: none;
+  color: #eeeeee;
+  padding: 10px;
+  margin: 10px;
+  text-decoration: none;
+}
+
+button:hover,
+a:hover,
+input[type="submit"]:hover {
+  cursor: pointer;
+  background-color: #4a4c4e !important;
+}
+/*# sourceMappingURL=auth.css.map */
