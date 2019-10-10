@@ -3,7 +3,7 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const mongodb = require("mongodb");
 
 const secretJSONToken = "faa807c4-d05e-47f3-91af-e09ec6cb80ce";
@@ -16,8 +16,6 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.static("static"))
-
-
 async function getUserCol() {
     const connect = await mongodb.connect(con, {
         useNewUrlParser: true,
@@ -33,12 +31,24 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 io.on("connection", (socket) => {
-    console.log("user connected");
-    socket.on("disconnect", () => console.log("user disconnected"));
-    socket.on("chat message", (msg) => {
-        console.log(msg);
-        socket.broadcast.emit("chat message", msg);
-    });
+    try {
+        console.log("user connected");
+
+        const auth = socket.handshake.query.auth;
+        const decryptedData = jwt.verify(auth, secretJSONToken);
+        console.log(decryptedData);
+        socket.on("disconnect", () => console.log("user disconnected"));
+        socket.on("chat message", (msg) => {
+            console.log(msg);
+            socket.broadcast.emit("chat message", JSON.stringify({
+                msg: msg,
+                username: decryptedData.data.username
+            }));
+        });
+    } catch (err) {
+        console.log(err);
+    }
+
 });
 
 http.listen(4200, () => console.log("4200"));

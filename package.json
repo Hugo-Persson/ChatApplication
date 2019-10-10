@@ -23,5 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.3.2",
     "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.3"
   }
 }

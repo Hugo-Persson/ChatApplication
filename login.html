@@ -43,6 +43,7 @@
             .then(data => {
                 console.log(data);
                 const auth = data.auth
+                localStorage.setItem("auth", auth);
             });
 
 

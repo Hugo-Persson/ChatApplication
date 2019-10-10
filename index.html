@@ -14,7 +14,9 @@
     </form>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        var socket = io();
+        var socket = io({
+            query: "auth=" + localStorage.getItem("auth")
+        });
         const input = document.getElementById("m");
         const messages = document.getElementById("messages");
         document.getElementById("chatForm").addEventListener("submit", (e) => {
@@ -24,7 +26,10 @@
             input.value = "";
             return false;
         });
-        socket.on("chat message", (msg) => messages.innerHTML = messages.innerHTML + `<li>${msg}</li>`);
+        socket.on("chat message", (msg) => {
+            const data = JSON.parse(msg);
+            messages.innerHTML = messages.innerHTML + `<li>${data.msg}</li>`
+        });
     </script>
 </body>
 
