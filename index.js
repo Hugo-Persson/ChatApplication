@@ -62,7 +62,14 @@ app.post("/login", async (req, res) => {
             //not undefined
             if (await bcrypt.compare(login.password, user.password)) {
                 // Log in true
+                const credentials = jwt.sign({
+                    exp: Math.floor(Date.now() / 1000) + (60 * 60 * 3),
+                    data: {
+                        username: user.username
+                    }
+                })
                 res.json({
+
                     error: false
                 });
             } else {
