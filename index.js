@@ -67,9 +67,9 @@ app.post("/login", async (req, res) => {
                     data: {
                         username: user.username
                     }
-                })
+                }, secretJSONToken)
                 res.json({
-
+                    auth: credentials,
                     error: false
                 });
             } else {
