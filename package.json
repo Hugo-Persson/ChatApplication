@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/Hugo-Persson/ChatApplication#readme",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.3.2",
