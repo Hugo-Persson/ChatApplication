@@ -1,57 +1,68 @@
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const mongodb = require("mongodb");
-
+const cookieParser = require("cookie-parser");
 const secretJSONToken = "faa807c4-d05e-47f3-91af-e09ec6cb80ce";
+const ObjectID = mongodb.ObjectID;
 const con = "mongodb+srv://Hugo:ecGXESd8L9zdfi3@cluster0-g63l9.mongodb.net/test?retryWrites=true&w=majority";
 
+http.listen(4200, () => console.log("4200"));
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({
     extended: true
 }));
-
+app.set("view engine", "ejs");
 app.use(express.static("static"))
-async function getUserCol() {
-    const connect = await mongodb.connect(con, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-    const db = await connect.db("chatapp");
-    const col = db.collection("users");
-    return col;
 
-}
+require("./io")(http, parseJsonToken);
 
-app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
-});
-io.on("connection", (socket) => {
-    try {
-        console.log("user connected");
 
-        const auth = socket.handshake.query.auth;
-        const decryptedData = jwt.verify(auth, secretJSONToken);
-        console.log(decryptedData);
-        socket.on("disconnect", () => console.log("user disconnected"));
-        socket.on("chat message", (msg) => {
-            console.log(msg);
-            socket.broadcast.emit("chat message", JSON.stringify({
-                msg: msg,
-                username: decryptedData.data.username
-            }));
-        });
-    } catch (err) {
-        console.log(err);
+
+
+
+app.get("/", async (req, res) => {
+    let chat = req.query.chat;
+    if (!(chat)) {
+        chat = "All";
+    }
+    if (req.cookies.auth) {
+        // Defined
+        try {
+            const data = await parseJsonToken(req.cookies.auth);
+            const userCol = await getUserCol();
+            const user = await userCol.findOne({
+                username: data.data.username
+            })
+
+            const chats = user.chats.map(item => {
+                return `<a href="/?chat=${item}"> <li class="${item===chat?"currentChat":""}" >${item}</li></a>`
+
+            })
+            res.render("index.ejs", {
+                chats: chats.join(""),
+                chat: chat
+
+            });
+        } catch (err) {
+            res.redirect("/login");
+            console.log("err")
+            console.log(err);
+        }
+
+    } else {
+        console.log("no auth")
+
+        res.redirect("/login");
     }
 
 });
 
-http.listen(4200, () => console.log("4200"));
+
 app.get("/register", (req, res) => {
     res.sendFile(__dirname + "/register.html");
 });
@@ -60,9 +71,7 @@ app.get("/login", (req, res) => {
 });
 app.post("/login", async (req, res) => {
     try {
-
         const login = req.body;
-        console.log(login);
         const col = await getUserCol();
         const user = await col.findOne({
             username: login.username
@@ -104,10 +113,12 @@ app.post("/login", async (req, res) => {
 app.post("/registerUser", async (req, res) => {
     try {
         let user = req.body;
+        //Adding all chat
+        user.chats = ["All", "Random Chat"];
+
         const col = await getUserCol();
         const hashedPassword = await hashPassword(user.password);
         user.password = hashedPassword;
-        console.log(user);
         await col.insertOne(user);
         res.send("success");
     } catch (err) {
@@ -126,5 +137,33 @@ async function hashPassword(password) {
     } catch (err) {
         console.log(err);
     }
+
+}
+async function getUserCol() {
+    const db = await getDb();
+    const col = db.collection("users");
+    return col;
+}
+async function getDb() {
+    const connect = await mongodb.connect(con, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
+    const db = await connect.db("chatapp");
+    return db;
+}
+
+async function parseJsonToken(auth) {
+    return new Promise((resolve, reject) => {
+        jwt.verify(auth, secretJSONToken, (err, decoded) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(decoded);
+            }
+
+
+        })
+    })
 
 }

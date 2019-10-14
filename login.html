@@ -41,9 +41,12 @@
         fetch("/login", init)
             .then(res => res.json())
             .then(data => {
-                console.log(data);
-                const auth = data.auth
-                localStorage.setItem("auth", auth);
+                if (!data.error) {
+                    const auth = data.auth
+                    document.cookie = "auth=" + auth + ";path=/";
+                    window.location.pathname = "/";
+                }
+
             });
 
 

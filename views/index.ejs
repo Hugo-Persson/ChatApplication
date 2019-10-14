@@ -3,19 +3,29 @@
 
 <head>
     <title>Socket.IO chat</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 
 </head>
 
 <body>
-    <ul id="messages"></ul>
-    <form action="" id="chatForm">
-        <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    <div id="sidebar">
+        <ul>
+            <%- chats%>
+        </ul>
+
+    </div>
+    <div id="chatWindow">
+        <ul id="messages"></ul>
+        <form action="" id="chatForm">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        const chat = "<%= chat%>";
         var socket = io({
-            query: "auth=" + document.cookie.replace(/(?:(?:^|.*;\s*)auth\s*\=\s*([^;]*).*$)|^.*$/, "$1")
+            query: `auth=${document.cookie.replace(/(?:(?:^|.*;\s*)auth\s*\=\s*([^;]*).*$)|^.*$/, "$1")}&chat=${chat}`
         });
         const input = document.getElementById("m");
         const messages = document.getElementById("messages");
