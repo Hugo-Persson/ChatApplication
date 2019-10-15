@@ -20,19 +20,29 @@ body {
   margin: 0;
 }
 
+a {
+  text-decoration: none;
+  color: white;
+}
+
 #sidebar {
   grid-area: "sidebar";
   background-color: darkcyan;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
 }
 
 #sidebar ul {
+  -webkit-box-flex: 9;
+      -ms-flex: 9;
+          flex: 9;
   list-style: none;
   padding: 0;
-}
-
-#sidebar ul a {
-  text-decoration: none;
-  color: white;
 }
 
 #sidebar ul li {
@@ -40,6 +50,15 @@ body {
   padding: 10px 0px;
   background-color: #5a5a5a;
   text-align: center;
+}
+
+#sidebar #newChat {
+  -webkit-box-flex: 0.5;
+      -ms-flex: 0.5;
+          flex: 0.5;
+  background-color: #111111;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #chatWindow {

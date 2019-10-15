@@ -19,7 +19,7 @@ app.use(express.urlencoded({
 app.set("view engine", "ejs");
 app.use(express.static("static"))
 
-require("./io")(http, parseJsonToken);
+require("./io")(http, parseJsonToken, getDb);
 
 
 
@@ -34,18 +34,28 @@ app.get("/", async (req, res) => {
         // Defined
         try {
             const data = await parseJsonToken(req.cookies.auth);
+            const db = await getDb();
+            const chatsMongo = await db.collection("chats");
+            const currentChat = await chatsMongo.findOne({
+                name: chat
+            });
             const userCol = await getUserCol();
             const user = await userCol.findOne({
                 username: data.data.username
-            })
+            });
 
             const chats = user.chats.map(item => {
                 return `<a href="/?chat=${item}"> <li class="${item===chat?"currentChat":""}" >${item}</li></a>`
 
-            })
+            });
+            const chatMessages = currentChat.messages.map(value => {
+                return `<li><spand class="message">${value.msg}</span><br>
+                <span class="from">from ${value.user}</span></li>`;
+            });
             res.render("index.ejs", {
                 chats: chats.join(""),
-                chat: chat
+                chat: chat,
+                messages: chatMessages.join("")
 
             });
         } catch (err) {

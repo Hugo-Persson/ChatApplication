@@ -11,10 +11,11 @@
 
 <body>
     <form id="login">
-        <label for="username">Username</label><input type="text" name="username" id="username" placeholder="Username">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="Username">
         <br>
-        <label for="password">Password</label><input type="password" name="password" id="password"
-            placeholder="Password">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="Password">
         <input type="submit" value="Log In">
     </form>
 </body>
@@ -41,6 +42,7 @@
         fetch("/login", init)
             .then(res => res.json())
             .then(data => {
+                console.log(data);
                 if (!data.error) {
                     const auth = data.auth
                     document.cookie = "auth=" + auth + ";path=/";

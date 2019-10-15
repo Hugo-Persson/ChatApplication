@@ -12,12 +12,15 @@
         <ul>
             <%- chats%>
         </ul>
-
+        <a href="/newChat" id="newChat">Start new chat</a>
     </div>
     <div id="chatWindow">
-        <ul id="messages"></ul>
+        <ul id="messages">
+            <%- messages%>
+        </ul>
         <form action="" id="chatForm">
-            <input id="m" autocomplete="off" /><button>Send</button>
+            <input id="m" autocomplete="off" />
+            <button>Send</button>
         </form>
     </div>
 
@@ -32,14 +35,16 @@
         document.getElementById("chatForm").addEventListener("submit", (e) => {
             e.preventDefault();
             socket.emit("chat message", input.value);
-            messages.innerHTML = messages.innerHTML + `<li><spand class="message">${input.value}</span><br>
+            messages.innerHTML = messages.innerHTML +
+                `<li><spand class="message">${input.value}</span><br>
                 <span class="from">from you</span></li>`;
             input.value = "";
             return false;
         });
         socket.on("chat message", (msg) => {
             const data = JSON.parse(msg);
-            messages.innerHTML = messages.innerHTML + `<li><spand class="message">${data.msg}</span><br>
+            messages.innerHTML = messages.innerHTML +
+                `<li><spand class="message">${data.msg}</span><br>
                 <span class="from">from ${data.username}</span></li>`;
         });
     </script>

@@ -1,5 +1,4 @@
 $primaryDark:rgb(82, 82, 82);
-
 html {
     background-color: $primaryDark;
     height: 100vh;
@@ -18,28 +17,34 @@ body {
     height: 100%;
     grid-template-columns: 1fr 4fr;
     margin: 0;
+}
 
+a {
+    text-decoration: none;
+    color: white;
 }
 
 #sidebar {
     grid-area: "sidebar";
     background-color: darkcyan;
-
+    display: flex;
+    flex-direction: column;
     ul {
+        flex: 9;
         list-style: none;
         padding: 0;
-
-        a {
-            text-decoration: none;
-            color: white;
-        }
-
         li {
             width: 100%;
             padding: 10px 0px;
             background-color: rgb(90, 90, 90);
             text-align: center;
         }
+    }
+    #newChat {
+        flex: 0.5;
+        background-color: rgb(17, 17, 17);
+        text-align: center;
+        vertical-align: middle;
     }
 }
 
@@ -59,7 +64,6 @@ body {
     bottom: 0%;
     width: 100%;
     left: 0;
-
     button {
         flex: 0.5;
         background-color: aqua;
@@ -74,7 +78,6 @@ body {
     background-color: rgb(34, 34, 34);
     color: white;
     border: none;
-
     &:focus {
         outline: none;
     }
@@ -82,5 +85,4 @@ body {
 
 #messages {
     list-style: none;
-
 }

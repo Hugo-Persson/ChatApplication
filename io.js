@@ -5,10 +5,12 @@ module.exports = async function (http, parseJsonToken, getDb) {
     io.on("connection", async (socket) => {
         try {
             const handshake = socket.handshake.query;
-
             const auth = handshake.auth;
             const chat = handshake.chat;
             const decryptedData = await parseJsonToken(auth);
+
+            const db = await getDb();
+            const chats = await db.collection("chats");
 
             sockets.push({
                 chat: chat,
@@ -17,6 +19,16 @@ module.exports = async function (http, parseJsonToken, getDb) {
 
             socket.on("disconnect", () => sockets.splice(sockets.find(item => item.socket === socket), 1));
             socket.on("chat message", (msg) => {
+                chats.updateOne({
+                    name: chat
+                }, {
+                    $push: {
+                        messages: {
+                            msg: msg,
+                            user: decryptedData.data.username
+                        }
+                    }
+                });
                 sockets.map(value => {
                     if (value.chat === chat && value.socket !== socket) {
                         console.log("itt");
