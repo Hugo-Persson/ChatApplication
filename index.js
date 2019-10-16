@@ -18,7 +18,7 @@ app.use(express.urlencoded({
 }));
 app.set("view engine", "ejs");
 app.use(express.static("static"))
-
+app.use(checkAuthMiddleware);
 require("./io")(http, parseJsonToken, getDb);
 
 
@@ -30,44 +30,36 @@ app.get("/", async (req, res) => {
     if (!(chat)) {
         chat = "All";
     }
-    if (req.cookies.auth) {
-        // Defined
-        try {
-            const data = await parseJsonToken(req.cookies.auth);
-            const db = await getDb();
-            const chatsMongo = await db.collection("chats");
-            const currentChat = await chatsMongo.findOne({
-                name: chat
-            });
-            const userCol = await getUserCol();
-            const user = await userCol.findOne({
-                username: data.data.username
-            });
+    try {
+        const data = await parseJsonToken(req.cookies.auth);
+        const db = await getDb();
+        const chatsMongo = await db.collection("chats");
+        const currentChat = await chatsMongo.findOne({
+            name: chat
+        });
+        const userCol = await getUserCol();
+        const user = await userCol.findOne({
+            username: data.data.username
+        });
 
-            const chats = user.chats.map(item => {
-                return `<a href="/?chat=${item}"> <li class="${item===chat?"currentChat":""}" >${item}</li></a>`
+        const chats = user.chats.map(item => {
+            return `<a href="/?chat=${item}"> <li class="${item===chat?"currentChat":""}" >${item}</li></a>`
 
-            });
-            const chatMessages = currentChat.messages.map(value => {
-                return `<li><spand class="message">${value.msg}</span><br>
-                <span class="from">from ${value.user}</span></li>`;
-            });
-            res.render("index.ejs", {
-                chats: chats.join(""),
-                chat: chat,
-                messages: chatMessages.join("")
+        });
+        const chatMessages = currentChat.messages.map(value => {
+            return `<li><spand class="message">${value.msg}</span><br>
+            <span class="from">from ${value.user}</span></li>`;
+        });
+        res.render("index.ejs", {
+            chats: chats.join(""),
+            chat: chat,
+            messages: chatMessages.join("")
 
-            });
-        } catch (err) {
-            res.redirect("/login");
-            console.log("err")
-            console.log(err);
-        }
-
-    } else {
-        console.log("no auth")
-
+        });
+    } catch (err) {
         res.redirect("/login");
+        console.log("err")
+        console.log(err);
     }
 
 });
@@ -119,6 +111,27 @@ app.post("/login", async (req, res) => {
     } catch (err) {
         console.log(err);
     }
+});
+app.get("/newChat", async (req, res) => {
+    try {
+        const authData = await parseJsonToken(req.cookies.auth);
+        const userCol = await getUserCol();
+        const users = await userCol.find().toArray();
+        const options = users.map(val => {
+            return `<option value="${val.username}">${val.username}</option>`
+        });
+
+        res.render("newChat", {
+            options: options
+        });
+
+    } catch (err) {
+        console.log(err);
+
+    }
+
+
+
 });
 app.post("/registerUser", async (req, res) => {
     try {
@@ -176,4 +189,25 @@ async function parseJsonToken(auth) {
         })
     })
 
+}
+
+async function checkAuthMiddleware(req, res, next) {
+    if (req.path === "/login" || req.path === "/register") {
+        // Don't wanna check auth because they are probably in those routes to get auth
+        next();
+    } else {
+        if (req.cookies.auth) {
+            try {
+                await parseJsonToken(req.cookies.auth);
+                next();
+            } catch (err) {
+                console.log(err);
+                res.redirect("/login");
+            }
+        } else {
+            // Auth not present
+            res.redirect("/login");
+        }
+
+    }
 }
