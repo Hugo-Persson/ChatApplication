@@ -17,6 +17,7 @@ body {
 
 form {
     text-align: center;
+    margin: 10px;
 
     input {
         margin: 10px;
@@ -48,4 +49,8 @@ input[type="submit"] {
         cursor: pointer;
         background-color: #4a4c4e !important;
     }
+}
+
+a {
+    margin-top: 10px;
 }

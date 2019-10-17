@@ -1,4 +1,4 @@
-module.exports = async function (http, parseJsonToken, getDb) {
+module.exports = async function (http, parseJsonToken, db) {
     const io = require("socket.io")(http);
 
     let sockets = [];
@@ -9,7 +9,6 @@ module.exports = async function (http, parseJsonToken, getDb) {
             const chat = handshake.chat;
             const decryptedData = await parseJsonToken(auth);
 
-            const db = await getDb();
             const chats = await db.collection("chats");
 
             sockets.push({

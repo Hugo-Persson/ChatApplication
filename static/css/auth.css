@@ -12,6 +12,7 @@ body {
 
 form {
   text-align: center;
+  margin: 10px;
 }
 
 form input {
@@ -43,5 +44,9 @@ a:hover,
 input[type="submit"]:hover {
   cursor: pointer;
   background-color: #4a4c4e !important;
+}
+
+a {
+  margin-top: 10px;
 }
 /*# sourceMappingURL=auth.css.map */
