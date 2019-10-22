@@ -10,11 +10,12 @@
 </head>
 
 <body>
-    <form action="/startChat>">
-        <input type="text" placeholder="Chat name">
+    <form action="/startChat/<%-name%>" method="POST">
+        <input type="text" placeholder="Chat name" name="chatName">
         <select name="withUsername">
             <%-options%>
         </select>
+        <input type="submit" value="Create chat">
     </form>
 </body>
 

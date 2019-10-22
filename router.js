@@ -23,7 +23,7 @@ module.exports = (app, db, getUserCol, parseJsonToken, secretJSONToken) => {
             });
 
             const chats = user.chats.map(item => {
-                return `<a href="/?chat=${item}"> <li class="${item===chat?"currentChat":""}" >${item}</li></a>`
+                return `<a href="/?chat=${item}"> <li class="${item === chat ? "currentChat" : ""}" >${item}</li></a>`
 
             });
             const chatMessages = currentChat.messages.map(value => {
@@ -100,9 +100,11 @@ module.exports = (app, db, getUserCol, parseJsonToken, secretJSONToken) => {
             const options = users.map(val => {
                 return `<option value="${val.username}">${val.username}</option>`
             });
+            console.log(authData);
 
             res.render("newChat", {
-                options: options
+                options: options,
+                name: authData.data.username
             });
 
         } catch (err) {
@@ -130,6 +132,11 @@ module.exports = (app, db, getUserCol, parseJsonToken, secretJSONToken) => {
         }
 
 
+    });
+    app.post("/startChat/:name", async (req, res) => {
+        const userCol = await getUserCol();
+        user
+        res.send(req.body);
     });
 
     async function hashPassword(password) {
