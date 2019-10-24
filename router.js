@@ -133,10 +133,38 @@ module.exports = (app, db, getUserCol, parseJsonToken, secretJSONToken) => {
 
 
     });
-    app.post("/startChat/:name", async (req, res) => {
-        const userCol = await getUserCol();
-        user
-        res.send(req.body);
+    app.post("/startChat", async (req, res) => {
+        try {
+            const {
+                chatName,
+                withUsername
+            } = req.body;
+            const auth = await parseJsonToken(req.cookies.auth);
+            const chatCol = await db.collection("chats");
+            await chatCol.insertOne({
+                name: chatName
+            });
+            const userCol = await getUserCol();
+            userCol.updateOne({
+                username: auth.data.username
+            }, {
+                $push: {
+                    chats: chatName
+                }
+            });
+            userCol.updateOne({
+                username: withUsername
+            }, {
+                $push: {
+                    chats: chatName
+                }
+            });
+            res.redirect("/");
+        } catch (err) {
+            res.send("Error");
+            console.log(err);
+        }
+
     });
 
     async function hashPassword(password) {
